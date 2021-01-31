@@ -4,7 +4,7 @@ Documentation=https://github.com/mirkodcomparetti/rpi-sensehat_mqtt
 After=basic.target
 
 [Service]
-EnvironmentFile=-/etc/default/rpi-sensehat_mqtt
+EnvironmentFile=-/etc/default/rpi_sensehat_mqtt
 ExecStart=/usr/bin/python3 /etc/rpi_broadcaster/rpi_sensehat_mqtt.py
 Restart=on-failure
 RestartForceExitStatus=SIGPIPE
