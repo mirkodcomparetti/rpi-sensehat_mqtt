@@ -59,7 +59,7 @@ echo "Moving script files";
 if test -f "./rpi_sensehat_mqtt.py"; then
   sudo /bin/chown -R root:root ./rpi_sensehat_mqtt.py
   sudo /bin/mkdir -p /etc/rpi_broadcaster/
-  sudo /bin/mv ./sensehat_mqtt.py /etc/rpi_broadcaster/
+  sudo /bin/mv ./rpi_sensehat_mqtt.py /etc/rpi_broadcaster/
   restart_service=true;
 else
   echo "Script files not present, skip";
@@ -76,7 +76,7 @@ fi
 echo "Moving logrotate files";
 if test -f "./rpi_sensehat_mqtt.logrotate"; then
   sudo /bin/chown -R root:root ./rpi_sensehat_mqtt.logrotate
-  sudo /bin/mv ./sensehat_mqtt.logrotate /etc/logrotate.d/rpi_sensehat_mqtt
+  sudo /bin/mv ./rpi_sensehat_mqtt.logrotate /etc/logrotate.d/rpi_sensehat_mqtt
 else
   echo "Logrotate files not present, skip";
 fi
