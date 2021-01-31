@@ -1,0 +1,9 @@
+/var/log/rpi_broadcaster/rpi_sensehat_mqtt.log
+{
+    rotate 6
+    monthly
+    maxsize 2M
+    compress
+    missingok
+    notifempty
+}

@@ -1,0 +1,14 @@
+[Unit]
+Description=MDC - Script-driven MQTT broadcaster of sensehat data
+Documentation=https://github.com/mirkodcomparetti/rpi-sensehat_mqtt
+After=basic.target
+
+[Service]
+EnvironmentFile=-/etc/default/rpi-sensehat_mqtt
+ExecStart=/usr/bin/python3 /etc/mdc/rpi-sensehat_mqtt.py
+Restart=on-failure
+RestartForceExitStatus=SIGPIPE
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target
