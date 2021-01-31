@@ -32,6 +32,8 @@ The available configuration parameters are:
 * `RPI_SENSEHAT_MQTT_LOCATION="<desired location>"` to set the location in the message
 * `RPI_SENSEHAT_MQTT_BROKER="protocol://address:port"` endpoint of the broker
 * `RPI_SENSEHAT_MQTT_TOPIC_PREFIX="<desired prefix>"` to set the prefix for all the topics (default `sensehat`): `readings` is used for the readings and `commands` to process input commands
+* `RPI_SENSEHAT_MQTT_MEASUREMENT="<desired measurement>"` measurement name
+* `RPI_SENSEHAT_MQTT_WELCOME="<desired welcome message>"` welcome message at startup
 
 ## Deploy
 

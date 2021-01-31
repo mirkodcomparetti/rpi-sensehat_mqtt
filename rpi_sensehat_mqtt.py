@@ -14,6 +14,7 @@ from threading import Event
 import socket
 import time
 
+
 class RpiSenseHatMqtt:
     """Main app."""
 
@@ -32,7 +33,7 @@ class RpiSenseHatMqtt:
         self.broker_user = None
         if not self.validate_broker_info(
                 os.environ.get('RPI_SENSEHAT_MQTT_BROKER', "mqtt://test.mosquitto.org:1883")
-            ):
+        ):
             self.logger.error("Broker information not valid")
         else:
             self.logger.info("Initialize MQTT")
@@ -42,6 +43,7 @@ class RpiSenseHatMqtt:
             self.mqtt_client.on_publish = self.on_publish
             self.hostname = socket.gethostname()
             self.location = os.environ.get('RPI_SENSEHAT_MQTT_LOCATION', "studio")
+            self.measurement = os.environ.get('RPI_SENSEHAT_MQTT_MEASUREMENT', "environment")
 
             self.logger.info("Initialize SenseHAT")
             self.sense = SenseHat()
@@ -50,7 +52,7 @@ class RpiSenseHatMqtt:
             self.streaming_exit = Event()
 
             self.initialized = True
-            self.sense.show_message("Loaded!")
+            self.sense.show_message(os.environ.get('RPI_SENSEHAT_MQTT_WELCOME', "Loaded!"))
             self.sense.low_light = True
             self.logger.info("Done initialize class RpiSenseHatMqtt")
 
@@ -96,7 +98,8 @@ class RpiSenseHatMqtt:
     def stream_sensors(self):
         while not self.streaming_exit.is_set():
             json_message = self.read_sensors()
-            json_message["host"] = self.hostname
+            json_message["measurement"] = self.measurement
+            json_message["source"] = self.hostname
             json_message["location"] = self.location
             json_message = json.dumps(json_message)
             self.logger.debug("json_message {}".format(json_message))
