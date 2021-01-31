@@ -28,13 +28,10 @@ The script logs its operations in the file `/var/log/rpi_broadcaster/rpi_senseha
 The script requires a configuration through environmental variables defined in the `rpi_sensehat_mqtt.env` file.
 The available configuration parameters are:
 * `RPI_SENSEHAT_MQTT_LOGLEVEL="<desired loglevel>"` the desired log level to be used in the log, as defined by the [python library](https://docs.python.org/3/library/logging.html#levels)
-* `RPI_SENSEHAT_MQTT_CYCLE="<desired time cycle>"` the desired time cycle
+* `RPI_SENSEHAT_MQTT_CYCLE=<desired timecycle>` the desired time cycle
+* `RPI_SENSEHAT_MQTT_LOCATION="<desired location>"` to set the location in the message
 * `RPI_SENSEHAT_MQTT_BROKER="protocol://address:port"` endpoint of the broker
-* `RPI_SENSEHAT_MQTT_TOPIC_TEMPERATURE="<desired topic>"` topic to stream temperature data
-* `RPI_SENSEHAT_MQTT_TOPIC_HUMIDITY="<desired topic>"` topic to stream humidity data
-* `RPI_SENSEHAT_MQTT_TOPIC_PRESSURE="<desired topic>"` topic to stream pressure data
-* `RPI_SENSEHAT_MQTT_TOPIC_ACCELERATION="<desired topic>"` topic to stream acceleration data
-* `RPI_SENSEHAT_MQTT_TOPIC_INERTIAL="<desired topic>"` topic to stream inertial data
+* `RPI_SENSEHAT_MQTT_TOPIC_PREFIX="<desired prefix>"` to set the prefix for all the topics (default `sensehat`): `readings` is used for the readings and `commands` to process input commands
 
 ## Deploy
 
