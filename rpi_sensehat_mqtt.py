@@ -20,7 +20,7 @@ class RpiSenseHatMqtt:
     def __init__(self):
         """Init RpiSenseHatMqtt class."""
         self.initialized = False
-        topic_prefix = os.environ.get('RPI_SENSEHAT_TOPIC_PREFIX', "sensehat")
+        topic_prefix = os.environ.get('RPI_SENSEHAT_MQTT_TOPIC_PREFIX', "sensehat")
         self.topic_prefix = topic_prefix if topic_prefix.endswith("/") else (topic_prefix + "/")
         self.logger = logging.getLogger('rpi_broadcaster.RpiSenseHatMqtt')
         self.logger.info("Begin initialize class RpiSenseHatMqtt")
