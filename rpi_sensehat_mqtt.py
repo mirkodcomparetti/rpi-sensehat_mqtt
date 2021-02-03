@@ -81,11 +81,15 @@ class RpiSenseHatMqtt:
 
     def on_connect(self, client, userdata, flags, rc):
         self.logger.info("Connected with result code " + str(rc))
-        self.mqtt_client.subscribe(self.topic_prefix + "commands/#")
+        self.mqtt_client.subscribe(self.topic_prefix + "commands")
 
     def on_message(self, client, userdata, msg):
-        if msg.topic in [self.topic_prefix + "commands/#"]:
-            self.logger.debug(msg.topic + " " + str(msg.payload))
+        self.logger.debug(msg.topic + " " + str(msg.payload))
+        if msg.topic in [self.topic_prefix + "commands"]:
+            command = json.loads(msg.payload)
+            if 'ledwall' in command.keys():
+                self.logger.debug("Writing message on the LedWall: {}".format(command["ledwall"]))
+                self.sense.show_message(command["ledwall"])
 
     def on_publish(self, client, userdata, result):
         pass
