@@ -20,10 +20,10 @@ class RpiSenseHatMqtt:
 
     def __init__(self):
         """Init RpiSenseHatMqtt class."""
+        self.logger = logging.getLogger('rpi_sensehat_mqtt.RpiSenseHatMqtt')
         self.initialized = False
         topic_prefix = os.environ.get('RPI_SENSEHAT_MQTT_TOPIC_PREFIX', "sensehat")
         self.topic_prefix = topic_prefix if topic_prefix.endswith("/") else (topic_prefix + "/")
-        self.logger = logging.getLogger('rpi_broadcaster.RpiSenseHatMqtt')
         self.logger.info("Begin initialize class RpiSenseHatMqtt")
         self.logger.debug("Capturing signals")
         signal.signal(signal.SIGINT, self.cleanup)
@@ -31,16 +31,16 @@ class RpiSenseHatMqtt:
         self.broker_url = None
         self.broker_port = None
         self.broker_user = None
-        if not self.validate_broker_info(
+        if not self._validate_info(
                 os.environ.get('RPI_SENSEHAT_MQTT_BROKER', "mqtt://test.mosquitto.org:1883")
         ):
             self.logger.error("Broker information not valid")
         else:
             self.logger.info("Initialize MQTT")
             self.mqtt_client = mqtt.Client(client_id=str(uuid.uuid4()))
-            self.mqtt_client.on_connect = self.on_connect
-            self.mqtt_client.on_message = self.on_message
-            self.mqtt_client.on_publish = self.on_publish
+            self.mqtt_client.on_connect = self._on_connect
+            self.mqtt_client.on_message = self._on_message
+            self.mqtt_client.on_publish = self._on_publish
             self.hostname = socket.gethostname()
             self.location = os.environ.get('RPI_SENSEHAT_MQTT_LOCATION', "studio")
             self.measurement = os.environ.get('RPI_SENSEHAT_MQTT_MEASUREMENT', "environment")
@@ -65,7 +65,7 @@ class RpiSenseHatMqtt:
             self.mqtt_client.disconnect()
             self.mqtt_client.loop_stop()
 
-    def validate_broker_info(self, broker_info):
+    def _validate_info(self, broker_info):
         self.logger.debug("Validating " + broker_info)
         parseduri = urlparse(broker_info)
         if not (parseduri.scheme in ["mqtt", "ws"]):
@@ -79,11 +79,11 @@ class RpiSenseHatMqtt:
             return False
         return True
 
-    def on_connect(self, client, userdata, flags, rc):
+    def _on_connect(self, client, userdata, flags, rc):
         self.logger.info("Connected with result code " + str(rc))
         self.mqtt_client.subscribe(self.topic_prefix + "commands")
 
-    def on_message(self, client, userdata, msg):
+    def _on_message(self, client, userdata, msg):
         self.logger.debug(msg.topic + " " + str(msg.payload))
         if msg.topic in [self.topic_prefix + "commands"]:
             command = json.loads(msg.payload)
@@ -91,7 +91,7 @@ class RpiSenseHatMqtt:
                 self.logger.debug("Writing message on the LedWall: {}".format(command["ledwall"]))
                 self.sense.show_message(command["ledwall"])
 
-    def on_publish(self, client, userdata, result):
+    def _on_publish(self, client, userdata, result):
         pass
 
     def connect(self):
@@ -99,18 +99,18 @@ class RpiSenseHatMqtt:
             self.logger.debug("{}:{}".format(self.broker_url, self.broker_port))
             self.mqtt_client.connect(self.broker_url, self.broker_port, 30)
 
-    def stream_sensors(self):
+    def _stream_sensors(self):
         while not self.streaming_exit.is_set():
-            json_message = self.read_sensors()
-            json_message["measurement"] = self.measurement
-            json_message["source"] = self.hostname
-            json_message["location"] = self.location
-            json_message = json.dumps(json_message)
-            self.logger.debug("json_message {}".format(json_message))
-            self.mqtt_client.publish(self.topic_prefix + "readings", payload=json_message, qos=0, retain=False)
+            js_on_message = self._read_sensors()
+            js_on_message["measurement"] = self.measurement
+            js_on_message["source"] = self.hostname
+            js_on_message["location"] = self.location
+            js_on_message = json.dumps(js_on_message)
+            self.logger.debug("js_on_message {}".format(js_on_message))
+            self.mqtt_client.publish(self.topic_prefix + "readings", payload=js_on_message, qos=0, retain=False)
             self.streaming_exit.wait(self.streaming_cycle)
 
-    def read_sensors(self):
+    def _read_sensors(self):
         sensor_reading = {
             "time": int(round(time.time() * 1000)),
             "pressure": round(self.sense.get_pressure(), 3),
@@ -131,7 +131,7 @@ class RpiSenseHatMqtt:
         if not self.initialized:
             return None
         self.mqtt_client.loop_start()
-        self.stream_sensors()
+        self._stream_sensors()
 
 
 logging.basicConfig(
@@ -139,7 +139,7 @@ logging.basicConfig(
     format='%(asctime)s.%(msecs)03d %(levelname)s\t[%(name)s] %(message)s',
     datefmt='%Y-%m-%dT%H:%M:%S'
 )
-logger = logging.getLogger('rpi_broadcaster')
+logger = logging.getLogger("rpi_sensehat_mqtt")
 logger.setLevel(os.environ.get('RPI_SENSEHAT_MQTT_LOGLEVEL', logging.DEBUG))
 
 if __name__ == "__main__":
